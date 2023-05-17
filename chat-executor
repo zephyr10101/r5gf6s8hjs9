@@ -2,22 +2,87 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local StarterGui = game:GetService("StarterGui")
 
-StarterGui:SetCore("SendNotification", {
-    Title = "Script Loaded",
-    Text = "This script was made by @zephyr_scripts",
-    Duration = 5
-})
+-- Create GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "ScriptGUI"
+gui.Parent = LocalPlayer.PlayerGui
 
+-- Create Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 60)
+frame.Position = UDim2.new(1, -200, 1, -60)
+frame.BackgroundTransparency = 0.5
+frame.BackgroundColor3 = Color3.new(0, 0, 0)
+frame.Parent = gui
+
+-- Create TextLabel for "Script Execution"
+local scriptExecutionLabel = Instance.new("TextLabel")
+scriptExecutionLabel.Size = UDim2.new(0.7, -10, 1, 0)
+scriptExecutionLabel.Position = UDim2.new(0, 10, 0, 0)
+scriptExecutionLabel.BackgroundTransparency = 1
+scriptExecutionLabel.Text = "Script Execution"
+scriptExecutionLabel.TextColor3 = Color3.new(1, 1, 1)
+scriptExecutionLabel.TextSize = 20
+scriptExecutionLabel.TextWrapped = true
+scriptExecutionLabel.Parent = frame
+
+-- Create Toggle Button
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0, 80, 0, 40)
+toggleButton.Position = UDim2.new(0.8, -90, 0.5, -20)
+toggleButton.AnchorPoint = Vector2.new(1, 0.5)
+toggleButton.BackgroundColor3 = Color3.new(0, 1, 0)
+toggleButton.Text = "ON"
+toggleButton.TextColor3 = Color3.new(1, 1, 1)
+toggleButton.TextSize = 20
+toggleButton.Parent = frame
+
+-- Toggle Button Functionality
+local isScriptRunning = true
+
+toggleButton.MouseButton1Click:Connect(function()
+    isScriptRunning = not isScriptRunning
+    toggleButton.Text = isScriptRunning and "ON" or "OFF"
+    toggleButton.BackgroundColor3 = isScriptRunning and Color3.new(0, 1, 0) or Color3.new(1, 0, 0)
+end)
+
+-- Chat Message Listener
 LocalPlayer.Chatted:Connect(function(message)
-    local success, error = pcall(function()
-        loadstring(message)()
-    end)
-    if not success then
-        StarterGui:SetCore("SendNotification", {
-            Title = "Error",
-            Text = error,
-            Duration = 5
-        })
-        warn("Lua execution failed:", error)
+    if isScriptRunning then
+        local prefix = "/e "
+        local isAnonymous = false
+
+        if string.sub(message, 1, #prefix) == prefix then
+            message = string.sub(message, #prefix + 1)
+            isAnonymous = true
+        end
+
+        local success, error = pcall(function()
+            loadstring(message)()
+        end)
+
+        if not success then
+            warn("Lua execution failed:", error)
+            -- Send "Error" notification
+            StarterGui:SetCore("ChatMakeSystemMessage", {
+                Text = "Error: " .. error,
+                Color = Color3.new(1, 0, 0)
+            })
+        end
+
+        -- Send chat message about the script execution
+        if isAnonymous then
+            StarterGui:SetCore("ChatMakeSystemMessage", {
+                Text = "Script executed: " .. message,
+                Color = Color3.new(0, 0, 1)
+            })
+        end
     end
 end)
+
+-- Send initial chat message
+StarterGui:SetCore("ChatMakeSystemMessage", {
+    Text = "Type a script in the chat to run it, type /e before it to make it anonymous",
+    Color = Color3.new(1, 1, 1)
+})
+
