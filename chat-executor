@@ -3,7 +3,7 @@ local LocalPlayer = Players.LocalPlayer
 local StarterGui = game:GetService("StarterGui")
 
 StarterGui:SetCore("SendNotification", {
-    Title = "Script Loaded, type lua code in the chat to run it",
+    Title = "Script Loaded!",
     Text = "This script was made by @zephyr_scripts",
     Duration = 5
 })
