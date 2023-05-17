@@ -3,7 +3,7 @@ local LocalPlayer = Players.LocalPlayer
 local StarterGui = game:GetService("StarterGui")
 
 StarterGui:SetCore("SendNotification", {
-    Title = "Script Loaded!",
+    Title = "Script Loaded",
     Text = "This script was made by @zephyr_scripts",
     Duration = 5
 })
@@ -13,6 +13,11 @@ LocalPlayer.Chatted:Connect(function(message)
         loadstring(message)()
     end)
     if not success then
+        StarterGui:SetCore("SendNotification", {
+            Title = "Error",
+            Text = error,
+            Duration = 5
+        })
         warn("Lua execution failed:", error)
     end
 end)
