@@ -1,0 +1,18 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local StarterGui = game:GetService("StarterGui")
+
+StarterGui:SetCore("SendNotification", {
+    Title = "Script Loaded, type lua code in the chat to run it",
+    Text = "This script was made by @zephyr_scripts",
+    Duration = 5
+})
+
+LocalPlayer.Chatted:Connect(function(message)
+    local success, error = pcall(function()
+        loadstring(message)()
+    end)
+    if not success then
+        warn("Lua execution failed:", error)
+    end
+end)
