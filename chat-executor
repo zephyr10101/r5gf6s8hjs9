@@ -6,6 +6,7 @@ local StarterGui = game:GetService("StarterGui")
 local gui = Instance.new("ScreenGui")
 gui.Name = "ScriptGUI"
 gui.Parent = LocalPlayer.PlayerGui
+gui.ResetOnSpawn = false
 
 -- Create Frame
 local frame = Instance.new("Frame")
