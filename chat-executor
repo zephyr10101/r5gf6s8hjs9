@@ -87,3 +87,7 @@ StarterGui:SetCore("ChatMakeSystemMessage", {
     Color = Color3.new(1, 1, 1)
 })
 
+game.StarterGui:SetCore("SendNotification", {
+    Title = "Script Loaded",
+    Text = "Script made by @zephyr_scripts"
+})
