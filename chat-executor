@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local StarterGui = game:GetService("StarterGui")
+local status = "ON"
 
 -- Create GUI
 local gui = Instance.new("ScreenGui")
@@ -10,84 +11,106 @@ gui.ResetOnSpawn = false
 
 -- Create Frame
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 200, 0, 60)
-frame.Position = UDim2.new(1, -200, 1, -60)
+frame.Size = UDim2.new(0, 169, 0, 70)
+frame.Position = UDim2.new(0.858, 0, 0.854, 0)
 frame.BackgroundTransparency = 0.5
 frame.BackgroundColor3 = Color3.new(0, 0, 0)
 frame.Parent = gui
 
+local frameCorner = Instance.new("UICorner", frame)
+
+local frameStroke = Instance.new("UIStroke", frame)
+frameStroke.Color = Color3.new(0, 0, 0)
+frameStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+frameStroke.Thickness = 4
+frameStroke.Transparency = 0.2
+
 -- Create TextLabel for "Script Execution"
 local scriptExecutionLabel = Instance.new("TextLabel")
-scriptExecutionLabel.Size = UDim2.new(0.7, -10, 1, 0)
-scriptExecutionLabel.Position = UDim2.new(0, 10, 0, 0)
+scriptExecutionLabel.Size = UDim2.new(1, 0, -0.343, 50)
+scriptExecutionLabel.Position = UDim2.new(0, 0, 0, 0)
 scriptExecutionLabel.BackgroundTransparency = 1
-scriptExecutionLabel.Text = "Script Execution"
+scriptExecutionLabel.Text = "Toggle Script Execution"
 scriptExecutionLabel.TextColor3 = Color3.new(1, 1, 1)
-scriptExecutionLabel.TextSize = 20
-scriptExecutionLabel.TextWrapped = true
+scriptExecutionLabel.TextScaled = true
 scriptExecutionLabel.Parent = frame
+scriptExecutionLabel.Font = Enum.Font.SourceSansBold
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, 0, -0.486, 50)
+statusLabel.Position = UDim2.new(0, 0, 0.314, 0)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "Status: ON"
+statusLabel.TextColor3 = Color3.new(1, 1, 1)
+statusLabel.TextScaled = true
+statusLabel.Parent = frame
+statusLabel.Font = Enum.Font.SourceSansBold
 
 -- Create Toggle Button
 local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0, 80, 0, 40)
-toggleButton.Position = UDim2.new(0.8, -90, 0.5, -20)
-toggleButton.AnchorPoint = Vector2.new(1, 0.5)
+toggleButton.Size = UDim2.new(0, 58, 0, 24)
+toggleButton.Position = UDim2.new(0.325, 0, 0.57, 0)
 toggleButton.BackgroundColor3 = Color3.new(0, 1, 0)
-toggleButton.Text = "ON"
+toggleButton.Text = status
 toggleButton.TextColor3 = Color3.new(1, 1, 1)
-toggleButton.TextSize = 20
+toggleButton.TextScaled = true
 toggleButton.Parent = frame
+toggleButton.Font = Enum.Font.SourceSansBold
+
+local toggleButtonCorner = Instance.new("UICorner", toggleButton)
 
 -- Toggle Button Functionality
 local isScriptRunning = true
 
 toggleButton.MouseButton1Click:Connect(function()
-    isScriptRunning = not isScriptRunning
-    toggleButton.Text = isScriptRunning and "ON" or "OFF"
-    toggleButton.BackgroundColor3 = isScriptRunning and Color3.new(0, 1, 0) or Color3.new(1, 0, 0)
+	isScriptRunning = not isScriptRunning
+	status = isScriptRunning and "ON" or "OFF"
+	toggleButton.BackgroundColor3 = isScriptRunning and Color3.new(0, 1, 0) or Color3.new(1, 0, 0)
+	toggleButton.Text = status
+	statusLabel.Text = "Status: "..status
 end)
 
 -- Chat Message Listener
 LocalPlayer.Chatted:Connect(function(message)
-    if isScriptRunning then
-        local prefix = "/e "
-        local isAnonymous = false
+	if isScriptRunning then
+		local prefix = "/e "
+		local isAnonymous = false
 
-        if string.sub(message, 1, #prefix) == prefix then
-            message = string.sub(message, #prefix + 1)
-            isAnonymous = true
-        end
+		if string.sub(message, 1, #prefix) == prefix then
+			message = string.sub(message, #prefix + 1)
+			isAnonymous = true
+		end
 
-        local success, error = pcall(function()
-            loadstring(message)()
-        end)
+		local success, error = pcall(function()
+			loadstring(message)()
+		end)
 
-        if not success then
-            warn("Lua execution failed:", error)
-            -- Send "Error" notification
-            StarterGui:SetCore("ChatMakeSystemMessage", {
-                Text = "Error: " .. error,
-                Color = Color3.new(1, 0, 0)
-            })
-        end
+		if not success then
+			warn("Lua execution failed:", error)
+			-- Send "Error" notification
+			StarterGui:SetCore("ChatMakeSystemMessage", {
+				Text = "Error: " .. error,
+				Color = Color3.new(1, 0, 0)
+			})
+		end
 
-        -- Send chat message about the script execution
-        if isAnonymous then
-            StarterGui:SetCore("ChatMakeSystemMessage", {
-                Text = "Script executed: " .. message,
-                Color = Color3.new(0, 0, 1)
-            })
-        end
-    end
+		-- Send chat message about the script execution
+		if isAnonymous then
+			StarterGui:SetCore("ChatMakeSystemMessage", {
+				Text = "Script executed: " .. message,
+				Color = Color3.new(0, 0, 1)
+			})
+		end
+	end
 end)
 
 -- Send initial chat message
 StarterGui:SetCore("ChatMakeSystemMessage", {
-    Text = "Type a script in the chat to run it, type /e before it to make it anonymous",
-    Color = Color3.new(1, 1, 1)
+	Text = "Type a script in the chat to run it, type /e before it to make it anonymous",
+	Color = Color3.new(1, 1, 1)
 })
 
 game.StarterGui:SetCore("SendNotification", {
-    Title = "Script Loaded",
-    Text = "Script made by @zephyr_scripts"
+	Title = "Script Loaded",
+	Text = "Script made by @zephyr_scripts"
 })
